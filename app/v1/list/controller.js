@@ -3,6 +3,7 @@ const R = require('ramda')
 
 const db = require.main.require('./helpers/db.js')
 const logger = require.main.require('./helpers/logger.js')
+const { createSchema } = require('./schema.js')
 
 const getAll = async (req, res) => {
   const title = R.path(['query', 'title'])(req)
@@ -44,7 +45,7 @@ const getById = async (req, res) => {
     return res.status(500).json({ error: `${itemsErr}` })
   }
 
-  if (!R.length(list)) {
+  if (R.isEmpty(list)) {
     const error = `No list for id ${id}`
     logger.error(error)
     return res.status(400).json({ error })
@@ -53,4 +54,92 @@ const getById = async (req, res) => {
   return res.status(200).json({ ...list[0], items })
 }
 
-module.exports = { getAll, getById }
+const createList = async (req, res) => {
+  // Validate input with Joi schema
+  const { error: schemaErr, value: body } = createSchema.validate(req.body)
+  if (!R.isNil(schemaErr)) {
+    const error = `Error in input (err: ${schemaErr})`
+    logger.error(error)
+    return res.status(400).json({ error })
+  }
+
+  const [listErr, list] = await to(db('list').insert(body).returning('*'))
+  if (!R.isNil(listErr)) {
+    logger.error(`${listErr}`)
+    return res.status(500).json({ error: `${listErr}` })
+  }
+
+  console.log(list)
+
+  if (R.isEmpty(list)) {
+    const error = 'No row written'
+    logger.error(error)
+    return res.status(500).json({ error })
+  }
+
+  return res.status(200).json(list)
+}
+
+const updateList = async (req, res) => {
+  const id = R.path(['params', 'id'])(req)
+  if (R.isNil(id)) {
+    const error = 'Id not found'
+    logger.error(error)
+    return res.status(400).json({ error })
+  }
+
+  // Validate input with Joi schema
+  const { error: schemaErr, value: body } = createSchema.validate(req.body)
+  if (!R.isNil(schemaErr)) {
+    const error = `Error in input (err: ${schemaErr})`
+    logger.error(error)
+    return res.status(400).json({ error })
+  }
+
+  const [listErr, list] = await to(
+    db('list').update(body).where({ id }).returning('*'),
+  )
+  if (!R.isNil(listErr)) {
+    logger.error(`${listErr}`)
+    return res.status(500).json({ error: `${listErr}` })
+  }
+
+  console.log(list)
+
+  if (R.isEmpty(list)) {
+    const error = `No list for id ${id}`
+    logger.error(error)
+    return res.status(500).json({ error })
+  }
+
+  return res.status(200).json(list)
+}
+
+const deleteList = async (req, res) => {
+  const id = R.path(['params', 'id'])(req)
+  if (R.isNil(id)) {
+    const error = 'Id not found'
+    logger.error(error)
+    return res.status(400).json({ error })
+  }
+
+  const [listErr, list] = await to(
+    db('list').del().where({ id }).returning('*'),
+  )
+  if (!R.isNil(listErr)) {
+    logger.error(`${listErr}`)
+    return res.status(500).json({ error: `${listErr}` })
+  }
+
+  console.log(list)
+
+  if (R.isEmpty(list)) {
+    const error = `No list for id ${id}`
+    logger.error(error)
+    return res.status(500).json({ error })
+  }
+
+  return res.status(200).json(list)
+}
+
+module.exports = { getAll, getById, createList, updateList, deleteList }
