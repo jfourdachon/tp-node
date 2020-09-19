@@ -8,7 +8,7 @@ const getAll = async (req, res) => {
   const title = R.path(['query', 'title'])(req)
 
   const [listErr, list] = await to(
-    db('list')
+    db('vw_list')
       .select()
       .where((builder) =>
         !R.isNil(title)
@@ -32,10 +32,16 @@ const getById = async (req, res) => {
     return res.status(400).json({ error })
   }
 
-  const [listErr, list] = await to(db('list').select().where({ id }))
+  const [listErr, list] = await to(db('vw_list').select().where({ id }))
   if (!R.isNil(listErr)) {
     logger.error(`${listErr}`)
     return res.status(500).json({ error: `${listErr}` })
+  }
+
+  const [itemsErr, items] = await to(db('item').select().where({ list_id: id }))
+  if (!R.isNil(itemsErr)) {
+    logger.error(`${itemsErr}`)
+    return res.status(500).json({ error: `${itemsErr}` })
   }
 
   if (!R.length(list)) {
@@ -44,7 +50,7 @@ const getById = async (req, res) => {
     return res.status(400).json({ error })
   }
 
-  return res.status(200).json(list[0])
+  return res.status(200).json({ ...list[0], items })
 }
 
 module.exports = { getAll, getById }
