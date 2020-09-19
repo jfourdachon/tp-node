@@ -6,7 +6,7 @@ const logger = require.main.require('./helpers/logger.js')
 const { createSchema } = require('./schema.js')
 
 const getAll = async (req, res) => {
-  const title = R.path(['query', 'title'])(req)
+  const { title } = req.query
 
   const [listErr, list] = await to(
     db('vw_list')
@@ -70,7 +70,7 @@ const createList = async (req, res) => {
     return res.status(500).json({ error })
   }
 
-  return res.status(200).json(list)
+  return res.status(200).json(list[0])
 }
 
 const updateList = async (req, res) => {
@@ -85,7 +85,10 @@ const updateList = async (req, res) => {
   }
 
   const [listErr, list] = await to(
-    db('list').update(body).where({ id }).returning('*'),
+    db('list')
+      .update({ ...body, updated_at: new Date() })
+      .where({ id })
+      .returning('*'),
   )
   if (!R.isNil(listErr)) {
     logger.error(`${listErr}`)
@@ -98,7 +101,7 @@ const updateList = async (req, res) => {
     return res.status(500).json({ error })
   }
 
-  return res.status(200).json(list)
+  return res.status(200).json(list[0])
 }
 
 const deleteList = async (req, res) => {
@@ -118,7 +121,7 @@ const deleteList = async (req, res) => {
     return res.status(500).json({ error })
   }
 
-  return res.status(200).json(list)
+  return res.status(200).json(list[0])
 }
 
 module.exports = { getAll, getById, createList, updateList, deleteList }
