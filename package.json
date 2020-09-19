@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "docker:dev": "docker-compose -f docker/docker-compose.dev.yml up",
-    "dev": "nodemon --exec node index.js",
+    "dev": "./wait-for-postgres.sh -- nodemon --exec node index.js",
     "start": "node index.js"
   },
   "devDependencies": {
