@@ -26,12 +26,7 @@ const getAll = async (req, res) => {
 }
 
 const getById = async (req, res) => {
-  const id = R.path(['params', 'id'])(req)
-  if (R.isNil(id)) {
-    const error = 'Id not found'
-    logger.error(error)
-    return res.status(400).json({ error })
-  }
+  const { id } = req.params
 
   const [listErr, list] = await to(db('vw_list').select().where({ id }))
   if (!R.isNil(listErr)) {
@@ -69,8 +64,6 @@ const createList = async (req, res) => {
     return res.status(500).json({ error: `${listErr}` })
   }
 
-  console.log(list)
-
   if (R.isEmpty(list)) {
     const error = 'No row written'
     logger.error(error)
@@ -81,12 +74,7 @@ const createList = async (req, res) => {
 }
 
 const updateList = async (req, res) => {
-  const id = R.path(['params', 'id'])(req)
-  if (R.isNil(id)) {
-    const error = 'Id not found'
-    logger.error(error)
-    return res.status(400).json({ error })
-  }
+  const { id } = req.params
 
   // Validate input with Joi schema
   const { error: schemaErr, value: body } = createSchema.validate(req.body)
@@ -104,8 +92,6 @@ const updateList = async (req, res) => {
     return res.status(500).json({ error: `${listErr}` })
   }
 
-  console.log(list)
-
   if (R.isEmpty(list)) {
     const error = `No list for id ${id}`
     logger.error(error)
@@ -116,12 +102,7 @@ const updateList = async (req, res) => {
 }
 
 const deleteList = async (req, res) => {
-  const id = R.path(['params', 'id'])(req)
-  if (R.isNil(id)) {
-    const error = 'Id not found'
-    logger.error(error)
-    return res.status(400).json({ error })
-  }
+  const { id } = req.params
 
   const [listErr, list] = await to(
     db('list').del().where({ id }).returning('*'),
@@ -130,8 +111,6 @@ const deleteList = async (req, res) => {
     logger.error(`${listErr}`)
     return res.status(500).json({ error: `${listErr}` })
   }
-
-  console.log(list)
 
   if (R.isEmpty(list)) {
     const error = `No list for id ${id}`
