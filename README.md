@@ -12,4 +12,8 @@ Pour référence, un workspace [Insomnia](https://insomnia.rest/download/core/?)
 
 ## Lancer le projet
 
-Afin de lancer le projet et d'avoir votre API qui tourne, lancez simplement la commande `yarn docker:dev`.
+Afin de lancer le projet et d'avoir votre API qui tourne, lancez simplement la commande
+
+```bash
+yarn docker:dev
+```
