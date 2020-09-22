@@ -6,5 +6,5 @@ CREATE TABLE IF NOT EXISTS item (
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL  DEFAULT NOW(),
     CONSTRAINT item_pkey PRIMARY KEY (id),
-	CONSTRAINT item_list_id_fkey FOREIGN KEY (list_id) REFERENCES list(id)
+	CONSTRAINT item_list_id_fkey FOREIGN KEY (list_id) REFERENCES list(id) ON DELETE CASCADE
 );
