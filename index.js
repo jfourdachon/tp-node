@@ -32,7 +32,7 @@ app.use(
 // Use cors middleware for cross origin compatibility and security
 app.use(cors(corsOptions))
 
-// Use hlmet middleware to set some security helpers
+// Use helmet middleware to set some security helpers
 app.use(helmet())
 
 // Use bodyparser middleware to parse the various inputs

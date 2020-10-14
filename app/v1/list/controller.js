@@ -34,16 +34,16 @@ const getById = async (req, res) => {
     return res.status(500).json({ error: `${listErr}` })
   }
 
-  const [itemsErr, items] = await to(db('item').select().where({ list_id: id }))
-  if (!R.isNil(itemsErr)) {
-    logger.error(`${itemsErr}`)
-    return res.status(500).json({ error: `${itemsErr}` })
-  }
-
   if (R.isEmpty(list)) {
     const error = `No list for id ${id}`
     logger.error(error)
     return res.status(400).json({ error })
+  }
+
+  const [itemsErr, items] = await to(db('item').select().where({ list_id: id }))
+  if (!R.isNil(itemsErr)) {
+    logger.error(`${itemsErr}`)
+    return res.status(500).json({ error: `${itemsErr}` })
   }
 
   return res.status(200).json({ ...list[0], items })
