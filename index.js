@@ -49,7 +49,7 @@ app.use(
 app.use(compression())
 
 // Load root route
-app.get('/', (req, res) => res.status(200).json({ message: 'Todo server API' }))
+app.get('/', (req, res) => res.status(200).json({ message: 'Exam server API' }))
 
 // Define REST routes
 app.use('/api', apiRoutes)

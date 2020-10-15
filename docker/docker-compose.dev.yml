@@ -35,9 +35,20 @@ services:
     environment:
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_USER: ${DATABASE_USERNAME}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD_EXAM}
     volumes:
       - ./db-init/:/docker-entrypoint-initdb.d/
+
+  adminer: # Define adminer service
+    image: adminer:4.7-standalone # Use tagged adminer image
+    container_name: sample-app-adminer-container # Define container name
+    networks:
+      network: # Use the created network for our container
+        ipv4_address: ${ADMINER_IP} # Use the .env file IP address for container. Note that the IP must be within subnet range
+    ports:
+      - ${ADMINER_PORT}:${ADMINER_PORT}
+    environment: # Define manual env variables (not from a file)
+      ADMINER_DEFAULT_SERVER: postgres # Use postgres service name as default host for connexion. You can also use 172.17.0.1 as it is the bridge IP between your machine and docker
 
 networks:
   network:

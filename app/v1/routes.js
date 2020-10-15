@@ -1,9 +1,13 @@
 const router = require('express').Router()
 
-const list = require('./list/router.js')
-const item = require('./item/router.js')
+const user = require('./user/router.js')
+const article = require('./article/router.js')
+const comment = require('./comment/router.js')
+const auth = require('./auth/router.js')
 
-router.use('/list', list)
-router.use('/item', item)
+router.use('/user', user)
+router.use('/article', article)
+router.use('/comment', comment)
+router.use('/auth', auth)
 
 module.exports = router
